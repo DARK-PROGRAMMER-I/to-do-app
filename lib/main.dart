@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:master_plan/plan_provider.dart';
 import 'package:master_plan/views/plan_screen.dart';
 
 void main() => runApp(MasterPlan());
@@ -13,7 +14,9 @@ class MasterPlan extends StatelessWidget {
       title: 'Master-Plan-App',
       theme: ThemeData(primaryColor: Color(0xffDDAF53)),
       // home
-      home: PlanScreen(), // this class will be created in the views folder's file plan_screen.dart
+      home: PlanProvider(
+          child: PlanScreen()
+      ), // this class will be created in the views folder's file plan_screen.dart
     );
   }
 }

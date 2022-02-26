@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:master_plan/plan_provider.dart';
 import '../models/data_layers.dart';
 
 class PlanScreen extends StatefulWidget {
@@ -9,43 +10,86 @@ class PlanScreen extends StatefulWidget {
 }
 
 class _PlanScreenState extends State<PlanScreen> {
-  final plan = Plan();
   @override
   Widget build(BuildContext context) {
+    final plan = PlanProvider.of(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xffDDAF53),
         title: Text("Master Plan"),
       ),
-      body: _buildList(),
+      body: Column(
+        children: [
+          Expanded(
+              child: _buildList()
+          ),
+          SafeArea(
+              child:Container(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                  child: Text("${plan.completeness}" , style: TextStyle(fontSize: 20),)
+              )
+          )
+        ],
+      ),
       floatingActionButton: _buildAddTaskButton(),
     );
   }
 
   // Add Plan Widget
   Widget _buildAddTaskButton(){
+    final plan = PlanProvider.of(context);
     return FloatingActionButton(
       backgroundColor: Color(0xffDDAF53),
       onPressed: (){
-        plan.task.add(Task());
+        setState(() {
+          plan.tasks.add(Task());
+        });
       },
-      child: Icon(Icons.add , ),
+      child: Icon(Icons.add ),
 
     );
   }
   // _buildList Widget
   Widget _buildList(){
+    final plan = PlanProvider.of(context);
     return ListView.builder(
-      itemCount: plan.task.length,
+      // controller: scrollController,
+      itemCount: plan.tasks.length,
       itemBuilder: (context, index){
-        return _buildTaskTile(plan.task[index]);
+        return _buildTaskTile(plan.tasks[index]);
       },
     );
   }
   // _buildTaskTile Widget
-  Widget _buildTaskTile(Task task){
+  Widget _buildTaskTile(task){
+    final plan= PlanProvider.of(context);
     return ListTile(
-      title: Text("${task}"),
+      leading: Checkbox(
+        fillColor: MaterialStateProperty.all(Color(0xffDDAF53)),
+        onChanged: (selected){
+          setState(() {
+            task.complete = selected;
+          });
+        },
+        value: task.complete,
+      ),
+
+      title: TextFormField(
+
+          decoration: InputDecoration(focusColor: Color(0xffDDAF53),
+          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xffDDAF53))), // When we write,color changes. Initial color blue
+          fillColor: Color(0xffDDAF53),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color:Color(0xffDDAF53 ))
+          ),
+        ),
+        initialValue: task.description,
+        onFieldSubmitted: (message){
+          setState(() {
+            task.description = message;
+          });
+        },
+      ),
     );
   }
 
