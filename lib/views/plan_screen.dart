@@ -3,16 +3,28 @@ import 'package:master_plan/plan_provider.dart';
 import '../models/data_layers.dart';
 
 class PlanScreen extends StatefulWidget {
-  const PlanScreen({Key? key}) : super(key: key);
+  final Plan? plan;
+  const PlanScreen({Key? key, this.plan}) : super(key: key);
 
   @override
   _PlanScreenState createState() => _PlanScreenState();
 }
 
 class _PlanScreenState extends State<PlanScreen> {
+  Plan? get plan => widget.plan;
+  ScrollController? scrollController;
+  @override
+  void initState(){
+    super.initState();
+    scrollController=  ScrollController()
+    ..addListener((){
+      FocusScope.of(context).requestFocus(FocusNode());
+
+    });
+  }
   @override
   Widget build(BuildContext context) {
-    final plan = PlanProvider.of(context);
+    // final plan = PlanProvider.of(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xffDDAF53),
@@ -26,7 +38,7 @@ class _PlanScreenState extends State<PlanScreen> {
           SafeArea(
               child:Container(
                 padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Text("${plan.completeness}" , style: TextStyle(fontSize: 20),)
+                  child: Text("${plan!.completeness}" , style: TextStyle(fontSize: 20),)
               )
           )
         ],
@@ -37,12 +49,12 @@ class _PlanScreenState extends State<PlanScreen> {
 
   // Add Plan Widget
   Widget _buildAddTaskButton(){
-    final plan = PlanProvider.of(context);
+    // final plan = PlanProvider.of(context);
     return FloatingActionButton(
       backgroundColor: Color(0xffDDAF53),
       onPressed: (){
         setState(() {
-          plan.tasks.add(Task());
+          plan!.tasks.add(Task());
         });
       },
       child: Icon(Icons.add ),
@@ -51,12 +63,12 @@ class _PlanScreenState extends State<PlanScreen> {
   }
   // _buildList Widget
   Widget _buildList(){
-    final plan = PlanProvider.of(context);
+    // final plan = PlanProvider.of(context);
     return ListView.builder(
-      // controller: scrollController,
-      itemCount: plan.tasks.length,
+      controller: scrollController,
+      itemCount: plan!.tasks.length,
       itemBuilder: (context, index){
-        return _buildTaskTile(plan.tasks[index]);
+        return _buildTaskTile(plan!.tasks[index]);
       },
     );
   }
@@ -84,13 +96,19 @@ class _PlanScreenState extends State<PlanScreen> {
           ),
         ),
         initialValue: task.description,
-        onFieldSubmitted: (message){
+        onChanged: (message){
           setState(() {
             task.description = message;
           });
         },
       ),
     );
+  }
+
+  @override
+  void dispose(){
+  scrollController!.dispose();
+  super.dispose();
   }
 
 }

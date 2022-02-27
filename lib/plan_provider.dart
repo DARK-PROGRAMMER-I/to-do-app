@@ -3,7 +3,7 @@ import 'package:master_plan/models/data_layers.dart';
 
 
 class PlanProvider extends InheritedWidget{
-  final _plan = Plan();
+  final _plans = <Plan>[];
 
   PlanProvider({required Widget child}) : super(child: child);
 
@@ -14,8 +14,8 @@ class PlanProvider extends InheritedWidget{
     return false;
   }
   // 2- Static function
-  static Plan of(BuildContext context){
+  static List<Plan> of(BuildContext context){
     final provider= context.dependOnInheritedWidgetOfExactType<PlanProvider>();
-    return provider!._plan;
+    return provider!._plans;
   }
 }
