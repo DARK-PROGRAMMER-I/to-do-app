@@ -34,6 +34,7 @@ class _PlanCreatorScreenState extends State<PlanCreatorScreen> {
       padding: const EdgeInsets.all(20.0),
       child: Material( // Wrapped TextField in a material to make the field popout
         elevation: 10,
+        color: Theme.of(context).cardColor,
         child: TextField(
           controller: textController,
           decoration: InputDecoration(
@@ -49,12 +50,10 @@ class _PlanCreatorScreenState extends State<PlanCreatorScreen> {
   // AddPlan Method:
   void addPlan(){
     final text= textController.text;
-    if(text.isEmpty){
-      return; // do nothing
-    }
 
-    final plan = Plan()..name = text;
-    PlanProvider.of(context).add(plan);
+
+    final controller= PlanProvider.of(context);
+    controller.addNewPlan(text);
     textController.clear();
     FocusScope.of(context).requestFocus(FocusNode());
     setState(() {}); // to refresh the state
@@ -62,7 +61,7 @@ class _PlanCreatorScreenState extends State<PlanCreatorScreen> {
 
   // _buildMasterPlans Method so that each method contains unique title and inside each have different plans
   Widget _buildMasterPlans(){
-    final plans = PlanProvider.of(context);
+    final plans = PlanProvider.of(context).plans;
     if(plans.isEmpty){
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -78,14 +77,24 @@ class _PlanCreatorScreenState extends State<PlanCreatorScreen> {
       itemCount: plans.length,
       itemBuilder: (context, index){
         final plan = plans[index];
-        return ListTile(
-          title: Text("${plan.name}"),
-          subtitle: Text("${plan.completeness}"),
-          onTap: (){
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => PlanScreen(plan:plan))
-            );
+        return Dismissible(
+          key: ValueKey(plan) ,
+          background: Container(color: Color(0xffDDAF53)),
+          direction: DismissDirection.endToStart,
+          onDismissed: (_){
+            final controller= PlanProvider.of(context);
+            controller.deletePlan(plan);
+            setState(() {});
           },
+          child: ListTile(
+            title: Text("${plan.name  }"),
+            subtitle: Text("${plan.completeness}"),
+            onTap: (){
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => PlanScreen(plan:plan))
+              );
+            },
+          ),
         );
       },
 

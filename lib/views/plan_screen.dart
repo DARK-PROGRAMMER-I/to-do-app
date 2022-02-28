@@ -12,23 +12,23 @@ class PlanScreen extends StatefulWidget {
 
 class _PlanScreenState extends State<PlanScreen> {
   Plan? get plan => widget.plan;
-  ScrollController? scrollController;
-  @override
-  void initState(){
-    super.initState();
-    scrollController=  ScrollController()
-    ..addListener((){
-      FocusScope.of(context).requestFocus(FocusNode());
-
-    });
-  }
+  // ScrollController? scrollController;
+  // @override
+  // void initState(){
+  //   super.initState();
+  //   scrollController=  ScrollController()
+  //   ..addListener((){
+  //     FocusScope.of(context).requestFocus(FocusNode());
+  //
+  //   });
+  // }
   @override
   Widget build(BuildContext context) {
     // final plan = PlanProvider.of(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xffDDAF53),
-        title: Text("Master Plan"),
+        title: Text("${plan!.name}"),
       ),
       body: Column(
         children: [
@@ -54,7 +54,8 @@ class _PlanScreenState extends State<PlanScreen> {
       backgroundColor: Color(0xffDDAF53),
       onPressed: (){
         setState(() {
-          plan!.tasks.add(Task());
+          final controller= PlanProvider.of(context);
+          controller.createNewTask(plan!);
         });
       },
       child: Icon(Icons.add ),
@@ -65,7 +66,7 @@ class _PlanScreenState extends State<PlanScreen> {
   Widget _buildList(){
     // final plan = PlanProvider.of(context);
     return ListView.builder(
-      controller: scrollController,
+      // controller: scrollController,
       itemCount: plan!.tasks.length,
       itemBuilder: (context, index){
         return _buildTaskTile(plan!.tasks[index]);
@@ -74,42 +75,52 @@ class _PlanScreenState extends State<PlanScreen> {
   }
   // _buildTaskTile Widget
   Widget _buildTaskTile(task){
-    final plan= PlanProvider.of(context);
-    return ListTile(
-      leading: Checkbox(
-        fillColor: MaterialStateProperty.all(Color(0xffDDAF53)),
-        onChanged: (selected){
-          setState(() {
-            task.complete = selected;
-          });
-        },
-        value: task.complete,
-      ),
-
-      title: TextFormField(
-
-          decoration: InputDecoration(focusColor: Color(0xffDDAF53),
-          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xffDDAF53))), // When we write,color changes. Initial color blue
-          fillColor: Color(0xffDDAF53),
-          enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color:Color(0xffDDAF53 ))
-          ),
+    // final plan= PlanProvider.of(context);
+    return Dismissible(
+      key: ValueKey(task),
+      direction: DismissDirection.endToStart,
+      background: Container(color: Color(0xffDDAF53)),
+      onDismissed: (_){
+        final controller= PlanProvider.of(context);
+        controller.deleteTask(plan! , task);
+        setState(() {});
+      },
+      child: ListTile(
+        leading: Checkbox(
+          fillColor: MaterialStateProperty.all(Color(0xffDDAF53)),
+          onChanged: (selected){
+            setState(() {
+              task.complete = selected;
+            });
+          },
+          value: task.complete,
         ),
-        initialValue: task.description,
-        onChanged: (message){
-          setState(() {
-            task.description = message;
-          });
-        },
+
+        title: TextFormField(
+
+            decoration: InputDecoration(focusColor: Color(0xffDDAF53),
+            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xffDDAF53))), // When we write,color changes. Initial color blue
+            fillColor: Color(0xffDDAF53),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color:Color(0xffDDAF53 ))
+            ),
+          ),
+          initialValue: task.description,
+          onChanged: (message){
+            setState(() {
+              task.description = message;
+            });
+          },
+        ),
       ),
     );
   }
 
-  @override
-  void dispose(){
-  scrollController!.dispose();
-  super.dispose();
-  }
+  // @override
+  // void dispose(){
+  // scrollController!.dispose();
+  // super.dispose();
+  // }
 
 }
 
