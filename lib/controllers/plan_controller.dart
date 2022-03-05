@@ -42,6 +42,7 @@ class PlanController{
   }
   //  Function to check for plan text length and task description length
   String _checkForDuplicateCount(Iterable<String> items , String text){
+    print("${(items)}");
     final duplicateCount= items
         .where((item) => item.contains(text)).length;
 

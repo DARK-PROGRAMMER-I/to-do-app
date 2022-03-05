@@ -9,7 +9,7 @@ class Plan{
       .length;
 
   String get completeness{
-    return '$completeCount out of ${tasks.length} tasks';
+    return '$completeCount out of ${tasks.length} tasks completed!';
   }
 }
 
